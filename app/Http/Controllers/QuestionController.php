@@ -8,6 +8,7 @@ use App\Country;
 use App\User;
 use App\Http\Requests\QuestionStoreRequest;
 use App\Http\Resources\Question as QuestionResource;
+use Illuminate\Support\Facades\Auth;
 
 class QuestionController extends Controller
 {
@@ -41,7 +42,7 @@ class QuestionController extends Controller
     {
         // Prepare a new question data to store
         $aQuestionData['text'] = $request->text;
-        $aQuestionData['user_id'] = User::where('email', $request->email)->firstOrFail()->id;
+        $aQuestionData['user_id'] = Auth::user()->id;
         $aQuestionData['country_id'] = Country::where('name', $request->country)->firstOrFail()->id;
 
         // Store the question

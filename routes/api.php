@@ -13,9 +13,14 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+/* Route::middleware('auth:api')->get('/user', function (Request $request) { */
+/*     return $request->user(); */
+/* }); */
 
-// Create a new question
-Route::post('question', 'QuestionController@store');
+Route::post('register', 'AuthController@register');
+Route::post('login', 'AuthController@login');
+
+Route::group(['middleware' => ['jwt.auth']], function () {
+    // Create a new question
+    Route::post('question', 'QuestionController@store');
+});
