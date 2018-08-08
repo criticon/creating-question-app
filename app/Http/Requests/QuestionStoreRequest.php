@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
+use App\Question;
 
 class QuestionStoreRequest extends FormRequest
 {
@@ -24,7 +26,18 @@ class QuestionStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'text' => 'required|min:3',
+            'text' => ['required', function ($attribute, $value, $fail) {
+                // Determine how many questions current user has created during the last day
+                $iQuestionCounter = Question::where(
+                    [['user_id', Auth::user()->id],
+                    ['created_at', '>=', \Carbon\Carbon::now()->subDay()]]
+                )->count();
+
+                // Fail if the user has added more than one question during the last day
+                if ($iQuestionCounter >= 1) {
+                    $fail('Too many questions. You are allowed to add one question a day');
+                }
+            }],
             'country' => 'required|exists:countries,name|in:Emirates',
             'email' => 'required|exists:users,email'
         ];
